@@ -1,6 +1,133 @@
 #include <raylib.h>
-#include <cmath>
+#include <string>
 #include <iostream>
+#include <raymath.h>
+
+void FirstFunction()
+{
+    InitWindow(500, 500, "VGP230_FA26_C1a");
+    SetTargetFPS(30);
+
+    const char* title = "Cool Math Games";
+    std::string Signiture = "W.Z";
+    std::string author = "By: " + Signiture;
+
+    int fontSize = 20;
+    int titleWidth = MeasureText(title, fontSize);
+    int authorWidth = MeasureText(author.c_str(), fontSize);
+
+    Vector2 center = { 250, 250 };
+    float rotation = -18.0f;
+    float rotationSpeed = 45.0f;
+    float radius = 150.0f;
+
+    while (!WindowShouldClose())
+    {
+        rotation += rotationSpeed * GetFrameTime();
+
+        if (rotation >= 360.0f)
+        {
+            rotation -= 360.0f;
+        }
+
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        DrawCircle(250, 250, radius, BLUE);
+
+        DrawPolyLinesEx(center, 5, radius, rotation, 5.0f, RED);
+
+        DrawText(title, (GetScreenWidth() - titleWidth) / 2,
+            240, fontSize, BLACK);
+
+        DrawText(author.c_str(), (GetScreenWidth() - authorWidth) / 2,
+            270, fontSize, BLACK);
+
+        EndDrawing();
+    }
+}
+
+void MovingBall()
+{
+    int width = 1600;
+    int height = 800;
+    InitWindow(width, height, "Moving Ball");
+    SetTargetFPS(30);
+
+    int radius = 20;
+    int centerX = radius;
+    int centerY = height / 2;
+    int traillength = 100;
+    int speed = 5;
+
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+
+
+        DrawCircle(centerX, centerY, radius, ORANGE);
+
+        centerX += speed;
+
+        if (centerX - radius >= width)
+        {
+            centerX = -radius + 1;
+        }
+
+
+
+        EndDrawing();
+    }
+
+    CloseWindow();
+}
+
+void NewMovingBall()
+{
+    int width = 1600;
+    int height = 800;
+    InitWindow(width, height, "New Moving Ball");
+    SetTargetFPS(60);
+
+    int radius = 20;
+    int centerX = radius;
+    int centerY = height / 2;
+    int traillength = 100;
+    int speed = 5;
+
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        for (int i = traillength - 1; i >= 0; i--)
+        {
+            int alpha = 255 * (traillength - i) / traillength;
+
+            Color trailColor = {
+                255, 165, 0, static_cast<unsigned char>(alpha)
+            };
+
+            DrawCircle(centerX - (i * speed * 2),
+                centerY, radius, trailColor);
+        }
+
+        DrawCircle(centerX, centerY, radius, ORANGE);
+
+        centerX += speed;
+
+        if (centerX - radius >= width)
+        {
+            centerX = -radius + 1;
+        }
+
+        EndDrawing();
+    }
+
+    CloseWindow();
+}
 
 void TwoBallImpact()
 {
@@ -34,13 +161,15 @@ void TwoBallImpact()
             centerX2 += speedX2;
             centerY2 += speedY2;
 
-            // Ball 1: right and left walls
+            // ball One
+            // Right wall
             if (centerX1 + radius >= WindowWidth)
             {
                 centerX1 = WindowWidth - radius;
                 speedX1 = -GetRandomValue(2, 5);
                 speedY1 = GetRandomValue(-5, 5);
             }
+            // Left wall
             else if (centerX1 - radius <= 0)
             {
                 centerX1 = radius;
@@ -48,13 +177,14 @@ void TwoBallImpact()
                 speedY1 = GetRandomValue(-5, 5);
             }
 
-            // Ball 1: bottom and top walls
+            // Bottom wall
             if (centerY1 + radius >= WindowHeight)
             {
                 centerY1 = WindowHeight - radius;
                 speedY1 = -GetRandomValue(2, 5);
                 speedX1 = GetRandomValue(-5, 5);
             }
+            // Top wall
             else if (centerY1 - radius <= 0)
             {
                 centerY1 = radius;
@@ -62,7 +192,7 @@ void TwoBallImpact()
                 speedX1 = GetRandomValue(-5, 5);
             }
 
-            // Ball 1: keep movement inward at corners
+            // Corners
             if (centerX1 <= radius && speedX1 < 0)
             {
                 speedX1 *= -1;
@@ -73,13 +203,15 @@ void TwoBallImpact()
                 speedX1 *= -1;
             }
 
-            // Ball 2: right and left walls
+            // Ball Two
+            // Right wall
             if (centerX2 + radius >= WindowWidth)
             {
                 centerX2 = WindowWidth - radius;
                 speedX2 = -GetRandomValue(2, 5);
                 speedY2 = GetRandomValue(-5, 5);
             }
+            // Left wall
             else if (centerX2 - radius <= 0)
             {
                 centerX2 = radius;
@@ -87,13 +219,14 @@ void TwoBallImpact()
                 speedY2 = GetRandomValue(-5, 5);
             }
 
-            // Ball 2: bottom and top walls
+            // Bottom wall
             if (centerY2 + radius >= WindowHeight)
             {
                 centerY2 = WindowHeight - radius;
                 speedY2 = -GetRandomValue(2, 5);
                 speedX2 = GetRandomValue(-5, 5);
             }
+            // Top wall
             else if (centerY2 - radius <= 0)
             {
                 centerY2 = radius;
@@ -101,7 +234,7 @@ void TwoBallImpact()
                 speedX2 = GetRandomValue(-5, 5);
             }
 
-            // Ball 2: keep movement inward at corners
+            // Corners
             if (centerX2 <= radius && speedX2 < 0)
             {
                 speedX2 *= -1;
@@ -112,10 +245,11 @@ void TwoBallImpact()
                 speedX2 *= -1;
             }
 
-            // Pause when the balls touch
+            // Collision Box Calculation
             int distanceX = centerX2 - centerX1;
             int distanceY = centerY2 - centerY1;
 
+            // Collision
             if (distanceX * distanceX + distanceY * distanceY
                 <= combinedRadius * combinedRadius)
             {
@@ -129,10 +263,166 @@ void TwoBallImpact()
         DrawCircle(centerX1, centerY1, radius, ORANGE);
         DrawCircle(centerX2, centerY2, radius, BLUE);
 
+        // Collision Message
         if (pause)
         {
-            DrawText("Collision - paused", 10, 10, 20, BLACK);
+            DrawText("Collision - paused", 10, 10, 30, BLACK);
         }
+
+        EndDrawing();
+    }
+
+    CloseWindow();
+}
+
+void TriangleFunction()
+{
+    int wh = 800;
+    InitWindow(wh, wh, "Triangle Function");
+    SetTargetFPS(60);
+
+    Vector2 Top = { wh / 2.0f, 100.0f };
+    Vector2 Left = { 100.0f, wh - 100.0f };
+    Vector2 Right = { wh - 100.0f, wh - 100.0f };
+
+    float r = 80;
+    int isDragging = 0;
+
+    while (!WindowShouldClose())
+    {
+        Vector2 Mouse = GetMousePosition();
+
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            float TopDist = Vector2Distance(Mouse, Top);
+            float LeftDist = Vector2Distance(Mouse, Left);
+            float RightDist = Vector2Distance(Mouse, Right);
+
+            if (TopDist <= r)
+            {
+                isDragging = 1;
+            }
+            else if (LeftDist <= r)
+            {
+                isDragging = 2;
+            }
+            else if (RightDist <= r)
+            {
+                isDragging = 3;
+            }
+        }
+
+        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+        {
+            isDragging = 0;
+        }
+
+        switch (isDragging)
+        {
+        case 1: Top = Mouse; break;
+        case 2: Left = Mouse; break;
+        case 3: Right = Mouse; break;
+        }
+
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        DrawTriangleLines(Top, Left, Right, BLACK);
+
+        DrawCircle(Top.x, Top.y, r, RED);
+        DrawCircle(Left.x, Left.y, r, GREEN);
+        DrawCircle(Right.x, Right.y, r, BLUE);
+
+        EndDrawing();
+    }
+
+    CloseWindow();
+}
+
+void TriangleColorFunction()
+{
+    int wh = 800;
+    InitWindow(wh, wh, "Triangle Color Function");
+    SetTargetFPS(60);
+    Vector2 Center = { wh / 2.0f, wh / 2.0f };
+    Vector2 Top = { Center.x, Center.y };
+    Vector2 Left = { Center.x, Center.y };
+    Vector2 Right = { Center.x, Center.y };
+
+    float r = 120;
+    int isDragging = 0;
+
+    while (!WindowShouldClose())
+    {
+        Vector2 Mouse = GetMousePosition();
+
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            float TopDist = Vector2Distance(Mouse, Top);
+            float LeftDist = Vector2Distance(Mouse, Left);
+            float RightDist = Vector2Distance(Mouse, Right);
+
+            if (TopDist <= r)
+            {
+                isDragging = 1;
+            }
+            else if (LeftDist <= r)
+            {
+                isDragging = 2;
+            }
+            else if (RightDist <= r)
+            {
+                isDragging = 3;
+            }
+        }
+
+        if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+        {
+            isDragging = 0;
+        }
+
+        if (isDragging != 0)
+        {
+            Vector2 offset = { Mouse.x - Center.x, Mouse.y - Center.y };
+
+            Vector2 plus120 = { -0.5f * offset.x - 0.86602540378f * offset.y, 0.86602540378f * offset.x - 0.5f * offset.y }; // x = xcos(??)Theta - ysin(Theta)
+
+            Vector2 minus120 = { -0.5f * offset.x + 0.86602540378f * offset.y, -0.86602540378f * offset.x - 0.5f * offset.y }; // x = xcos(??)Theta + ysin(Theta)
+
+            switch (isDragging)
+            {
+            case 1:
+                Top = Mouse;
+                Left = Vector2Add(Center, minus120);
+                Right = Vector2Add(Center, plus120);
+                break;
+
+            case 2:
+                Left = Mouse;
+                Top = Vector2Add(Center, plus120);
+                Right = Vector2Add(Center, minus120);
+                break;
+
+            case 3:
+                Right = Mouse;
+                Top = Vector2Add(Center, minus120);
+                Left = Vector2Add(Center, plus120);
+                break;
+            }
+        }
+
+
+        BeginDrawing();
+
+        BeginBlendMode(BLEND_ADDITIVE);
+
+        ClearBackground(BLACK);
+
+        DrawTriangleLines(Top, Left, Right, BLACK);
+
+        DrawCircle(Top.x, Top.y, r, RED);
+        DrawCircle(Left.x, Left.y, r, GREEN);
+        DrawCircle(Right.x, Right.y, r, BLUE);
 
         EndDrawing();
     }
@@ -142,6 +432,6 @@ void TwoBallImpact()
 
 int main()
 {
-    TwoBallImpact();
+    TriangleColorFunction();
     return 0;
 }
