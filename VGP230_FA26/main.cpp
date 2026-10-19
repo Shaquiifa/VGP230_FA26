@@ -383,13 +383,15 @@ void TriangleColorFunction()
 
         if (isDragging != 0)
         {
+			//Calculation Block, Determine the offset of the mouse from the center of the triangle
             Vector2 offset = { Mouse.x - Center.x, Mouse.y - Center.y };
 
-            Vector2 plus120 = { -0.5f * offset.x - 0.86602540378f * offset.y, 0.86602540378f * offset.x - 0.5f * offset.y }; // x = xcos(??)Theta - ysin(Theta)
+			//2D Rotation Equation: x = xcos(Theta) - ysin(Theta), x = xcos(Theta) + ysin(Theta), Theta = 120 degrees, cos(Theta) = -0.5, sin(Theta) = 0.86602540378
+            Vector2 plus120 = { -0.5f * offset.x - 0.86602540378f * offset.y, 0.86602540378f * offset.x - 0.5f * offset.y }; 
 
-            Vector2 minus120 = { -0.5f * offset.x + 0.86602540378f * offset.y, -0.86602540378f * offset.x - 0.5f * offset.y }; // x = xcos(??)Theta + ysin(Theta)
+            Vector2 minus120 = { -0.5f * offset.x + 0.86602540378f * offset.y, -0.86602540378f * offset.x - 0.5f * offset.y };
 
-            switch (isDragging)
+            switch (isDragging) //Does the actual moving
             {
             case 1:
                 Top = Mouse;
@@ -414,11 +416,11 @@ void TriangleColorFunction()
 
         BeginDrawing();
 
-        BeginBlendMode(BLEND_ADDITIVE);
+		BeginBlendMode(BLEND_ADDITIVE); //Additive Colour Blending Mode
 
         ClearBackground(BLACK);
 
-        DrawTriangleLines(Top, Left, Right, BLACK);
+        DrawTriangleLines(Top, Left, Right, GRAY);
 
         DrawCircle(Top.x, Top.y, r, RED);
         DrawCircle(Left.x, Left.y, r, GREEN);
