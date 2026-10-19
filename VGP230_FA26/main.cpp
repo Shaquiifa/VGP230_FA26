@@ -469,7 +469,7 @@ void TriangleShapeFunction()
             float angle2 = (i + 1) * (360.0f / triangles) - 90.0f;
 
 			//Calculate the points for the current triangle using the angles and radius, then rotate them around the center point 
-			//Equation: x = xcos(Theta) - ysin(Theta), y = xsin(Theta) + ycos(Theta), using DEG2RAD to convert degrees to radians for the rotation
+			//Equation: x = center.x + radius * cos(theta)
             Vector2 point1 = Vector2Add(center,Vector2Rotate (Vector2 { radius, 0.0f }, angle1 * DEG2RAD));
 
             Vector2 point2 = Vector2Add(center, Vector2Rotate (Vector2{ radius, 0.0f }, angle2 * DEG2RAD));
